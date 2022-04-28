@@ -81,13 +81,13 @@ def postCurrentStatus(api, user):
     else:
         
         if song != None:
-            logger.info("Waited ", a ," seconds.")
+            logger.info("Waited ", str(a) ," seconds.")
             postTheDamnThing(api, user)
             postCurrentStatus(api, user)
         
         else:
             logger.info("Restarting Countdown.")
-            logger.info("Waited ", a ," seconds.")
+            logger.info("Waited ", str(a) ," seconds.")
             postCurrentStatus(api, user)
 
 postCurrentStatus(api=api, user=user)
