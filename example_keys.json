@@ -1,17 +1,13 @@
 {
 
-
     "lastfm-API_KEY": "",
     "lastfm-API_SECRET": "",
     "lastfm-username":"",
     "lastfm-password":"",
-
-
 
     "twitter-consumer_key":"",
     "twitter-consumer_secret":"",
     "twitter-access_token":"",
     "twitter-access_token_secret":""
     
-
 }
