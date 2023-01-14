@@ -5,10 +5,11 @@ wobbler (tweet a scrobble)
 is a simple, 
 easy to use, 
 free and open source,
+Last.fm to Twitter integration.
+
 now with terminal based OAuth!
 
-last.fm -> twitter bot.
-
+## Setup
 
 just rename ```example_keys.json``` to ```keys.json```
 add your keys (get twitter access keys by running wobbler.py once)
