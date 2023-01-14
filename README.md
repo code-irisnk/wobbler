@@ -5,14 +5,16 @@ wobbler (tweet a scrobble)
 is a simple, 
 easy to use, 
 free and open source,
-no oauth required,
+now with terminal based OAuth!
 
 last.fm -> twitter bot.
 
 
 just rename ```example_keys.json``` to ```keys.json```
-add your keys
-and run ```python3 wobbler.py```
+add your keys (get twitter access keys by running wobbler.py once)
+and then you're ready to run wobbler endlessly :]
+
+Live demo [@nyaambxrradio](https://twitter.com/nyaambxrradio)
 
 [get a last.fm api account!](https://www.last.fm/api/account/create)
 
