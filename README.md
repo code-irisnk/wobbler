@@ -22,6 +22,3 @@ and then you're ready to run wobbler endlessly :]
 
 # Live Demo 
 [@nyaambxrradio](https://twitter.com/nyaambxrradio) on Twitter // [@nyaambxr](https://www.last.fm/user/nyaambxr) on Last.fm
-
-# Support
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/K3K75M0UR)
