@@ -16,40 +16,48 @@ handler = logging.StreamHandler(stream=sys.stdout)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# Twitter and Last.fm auth functions are brought to you by
+# pylast / Tweepy documentation , StackOverflow and GitHub Copilot
+# PRs are more than welcome!
 
-def get_oauth():
+def getTwitterKeys():
+    
+    # This function gets the access tokens for Twitter
+    
     consumer_key = json.load(open("keys.json"))["twitter-consumer_key"]
     consumer_secret = json.load(open("keys.json"))["twitter-consumer_secret"]
     request_token_url = "https://api.twitter.com/oauth/request_token"
+    
     oauth = OAuth1Session(consumer_key, client_secret=consumer_secret)
     fetch_response = oauth.fetch_request_token(request_token_url)
     resource_owner_key = fetch_response.get('oauth_token')
     resource_owner_secret = fetch_response.get('oauth_token_secret')
+    
     base_authorization_url = 'https://api.twitter.com/oauth/authorize'
     authorization_url = oauth.authorization_url(base_authorization_url)
     print('Please go here and authorize,', authorization_url)
+    
     verifier = input('Paste the PIN here: ')
     access_token_url = 'https://api.twitter.com/oauth/access_token'
+    
     oauth = OAuth1Session(consumer_key,
                             client_secret=consumer_secret,  
                             resource_owner_key=resource_owner_key,
                             resource_owner_secret=resource_owner_secret,
                             verifier=verifier)
+    
     oauth_tokens = oauth.fetch_access_token(access_token_url)
 
-    # save the access key and secret to keys.json
-    #keys = json.load(open("keys.json"))
-    #keys["twitter-access_token"] = oauth_tokens["oauth_token"]
-    #keys["twitter-access_token_secret"] = oauth_tokens["oauth_token_secret"]
-    #json.dump(keys, open("keys.json", "w"))
     #print the keys instead of saving them
     print("Token:",oauth_tokens["oauth_token"])
     print("Secret:",oauth_tokens["oauth_token_secret"])
 
-
 def doAuth():
-    keyfile = open("keys.json")
-    keys = json.load(keyfile)
+    
+    # This function does the auth for both Twitter and Last.fm
+    
+    keyFile = open("keys.json")
+    keys = json.load(keyFile)
 
     API_KEY = keys['lastfm-API_KEY']
     API_SECRET = keys['lastfm-API_SECRET']
@@ -81,32 +89,49 @@ def doAuth():
         raise e
     logger.info("Twitter API initated :P")
 
-## check if keys.json has access tokens
+# check if keys.json has Twitter access tokens, if not, use terminal oauth
 if "twitter-access_token" not in json.load(open("keys.json")):
-    get_oauth()
+    getTwitterKeys()
     exit()
 doAuth()
 
 
 def postCurrentStatus(api, user):
-    # get the last scrobble
-    lastScrobble = user.get_recent_tracks(limit=1)[0]
-    lastScrobbleTime = lastScrobble.timestamp
-    lastScrobbleTime = int(lastScrobbleTime)
+    
+    # cache the latest scrobble
+    # unfortunately this makes us lose the first scrobble from every startup
+    cachedScrobble = user.get_recent_tracks(limit=1)[0]
+    cachedScrobbleTime = cachedScrobble.timestamp
+    cachedScrobbleTime = int(cachedScrobbleTime)
+    
     # wait 10 seconds
-
     time.sleep(10)
-    # get the current scrobble
-    currentScrobble = user.get_recent_tracks(limit=1)[0]
-    currentScrobbleTime = currentScrobble.timestamp
-    currentScrobbleTime = int(currentScrobbleTime)
-    # if the current scrobble is not the same as the last scrobble, post the current song
-    if currentScrobbleTime != lastScrobbleTime:
-        songName = currentScrobble.track.title
-        songArtist = currentScrobble.track.artist.name
-        songUnix = currentScrobbleTime
-        status = "\"" + songName + "\"" + "\nby " + songArtist + "\nat UNIX_time=[" + str(songUnix) + "]"
+    
+    # get the latest scrobble
+    latestScrobble = user.get_recent_tracks(limit=1)[0]
+    latestScrobbleTime = latestScrobble.timestamp
+    latestScrobbleTime = int(latestScrobbleTime)
+    sessionAlive = False
+    
+    # this code does the following:
+    # if user != listening && sessionAlive == True, post status & sessionAlive = False
+    # if user == listening, post status & sessionAlive = True
+    if ((user.get_now_playing() == None) & (sessionAlive == True)):
+        sessionAlive = False
+        songName = latestScrobble.track.title
+        songArtist = latestScrobble.track.artist.name
+        status = "\"" + songName + "\"" + "\nby " + songArtist + "\nat UNIX_time=[" + str(latestScrobbleTime) + "]"
         api.update_status(status)
-        logger.info("Posted current song!")
-    postCurrentStatus(api, user)
+        logger.info("Posted current song!") 
+    else:
+        if (latestScrobbleTime != cachedScrobbleTime):
+            sessionAlive = True
+            songName = latestScrobble.track.title
+            songArtist = latestScrobble.track.artist.name
+            status = "\"" + songName + "\"" + "\nby " + songArtist + "\nat UNIX_time=[" + str(latestScrobbleTime) + "]"
+            api.update_status(status)
+            logger.info("Posted current song!") 
+
+    postCurrentStatus(api, user) # mfw infinite recursion
+
 postCurrentStatus(api, user)
