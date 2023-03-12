@@ -1,11 +1,14 @@
 # wobbler
+DEPRECATED IN FAVOUR OF
+[scrumblr](https://github.com/nyaambxr/scrumblr)
+which does the same thing as wobbler but with tumblr
 
-is a simple, 
+anyways, wobbler was a simple, 
 easy to use, 
 free and open source,
 Last.fm to Twitter integration.
 
-now with terminal based OAuth!
+with terminal based OAuth!
 
 ## Setup
 
