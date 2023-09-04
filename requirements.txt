@@ -1,2 +1,2 @@
-pylast==5.1.0
+pylast==5.2.0
 tweepy==4.14.0
